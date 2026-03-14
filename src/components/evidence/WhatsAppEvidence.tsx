@@ -59,7 +59,7 @@ function ChatMessage({ msg }: { msg: typeof MESSAGES[0] }) {
                     existing.annotationType === 'suspicious' ? 'ring-heist-amber/50' :
                     'ring-heist-blue/50'
                   ) : ''}`
-                : 'bg-[#D9FDD3] dark:bg-[#005C4B] rounded-tr-sm'
+                : 'bg-[#D9FDD3] rounded-tr-sm'
             }`}
             style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}
           >
@@ -171,12 +171,12 @@ export default function WhatsAppEvidence() {
         </div>
 
         {/* Chat area */}
-        <div className="bg-[#ECE5DD] dark:bg-[#0B141A] p-4 space-y-3 max-h-[600px] overflow-y-auto">
+        <div className="bg-[#ECE5DD] p-4 space-y-3 max-h-[600px] overflow-y-auto">
           {MESSAGES.map((msg) => (
             <div key={msg.id}>
               {msg.date && (
                 <div className="flex justify-center my-2">
-                  <span className="font-mono text-[11px] text-[#667781] bg-white/70 dark:bg-[#1F2C33]/80 px-3 py-1 rounded-full shadow-sm">
+                  <span className="font-mono text-[11px] text-[#667781] bg-white/70 px-3 py-1 rounded-full shadow-sm">
                     {msg.date}
                   </span>
                 </div>
@@ -187,8 +187,8 @@ export default function WhatsAppEvidence() {
         </div>
 
         {/* Input bar (decorative) */}
-        <div className="bg-[#F0F2F5] dark:bg-[#1F2C33] px-3 py-2 flex items-center gap-2 border-t border-[#D1D5DB]">
-          <div className="flex-1 bg-white dark:bg-[#2A3942] rounded-full px-4 py-2 text-[13px] text-[#8696A0]">
+        <div className="bg-[#F0F2F5] px-3 py-2 flex items-center gap-2 border-t border-[#D1D5DB]">
+          <div className="flex-1 bg-white rounded-full px-4 py-2 text-[13px] text-[#8696A0]">
             Type a message
           </div>
           <div className="w-9 h-9 rounded-full bg-[#00A884] flex items-center justify-center">

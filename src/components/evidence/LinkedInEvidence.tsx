@@ -61,7 +61,7 @@ function ChatMessage({ msg }: { msg: typeof MESSAGES[0] }) {
                     existing.annotationType === 'suspicious' ? 'ring-heist-amber/50' :
                     'ring-heist-blue/50'
                   ) : ''}`
-                : 'bg-[#D4E8FF] dark:bg-[#1B365D] rounded-tr-sm'
+                : 'bg-[#D4E8FF] rounded-tr-sm'
             }`}
             style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', color: '#1a1a1a' }}
           >
@@ -150,12 +150,12 @@ export default function LinkedInEvidence() {
         </div>
 
         {/* Chat area */}
-        <div className="bg-[#F3F2EF] dark:bg-[#1B1F23] p-4 space-y-3 max-h-[600px] overflow-y-auto">
+        <div className="bg-[#F3F2EF] p-4 space-y-3 max-h-[600px] overflow-y-auto">
           {MESSAGES.map((msg) => (
             <div key={msg.id}>
               {msg.date && (
                 <div className="flex justify-center my-2">
-                  <span className="font-mono text-[11px] text-[#666] bg-white/70 dark:bg-[#2D2D2D]/80 px-3 py-1 rounded-full shadow-sm">
+                  <span className="font-mono text-[11px] text-[#666] bg-white/70 px-3 py-1 rounded-full shadow-sm">
                     {msg.date}
                   </span>
                 </div>
@@ -166,8 +166,8 @@ export default function LinkedInEvidence() {
         </div>
 
         {/* Input bar */}
-        <div className="bg-white dark:bg-[#1B1F23] px-3 py-2 flex items-center gap-2 border-t border-[#E0E0E0]">
-          <div className="flex-1 bg-[#EEF3F8] dark:bg-[#38434F] rounded-full px-4 py-2 text-[13px] text-[#8696A0]">
+        <div className="bg-white px-3 py-2 flex items-center gap-2 border-t border-[#E0E0E0]">
+          <div className="flex-1 bg-[#EEF3F8] rounded-full px-4 py-2 text-[13px] text-[#8696A0]">
             Write a message...
           </div>
           <div className="w-9 h-9 rounded-full bg-[#0A66C2] flex items-center justify-center">

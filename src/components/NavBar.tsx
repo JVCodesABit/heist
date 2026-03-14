@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useInvestigationStore } from '@/store/investigationStore';
-import { Sun, Moon, FolderOpen, Search, Brain, BarChart2, User } from 'lucide-react';
+import { FolderOpen, Search, Brain, BarChart2, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const STEPS = [
@@ -13,13 +13,9 @@ const STEPS = [
 ];
 
 export default function NavBar() {
-  const { theme, toggleTheme, caseStarted, hypothesis } = useInvestigationStore();
+  const { caseStarted, hypothesis } = useInvestigationStore();
   const location = useLocation();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }, [theme]);
 
   const getCurrentStep = () => {
     const path = location.pathname;
@@ -120,23 +116,13 @@ export default function NavBar() {
         </div>
       )}
 
-      {/* Right: case badge + theme toggle */}
+      {/* Right: case badge */}
       <div className="flex items-center gap-2 flex-shrink-0">
         {caseStarted && (
           <span className="hidden sm:flex font-mono text-[10px] text-heist-red bg-heist-red/10 border border-heist-red/30 px-2.5 py-1 rounded-sm tracking-wider">
             CASE #047
           </span>
         )}
-        <button
-          onClick={toggleTheme}
-          className="btn-ghost p-2 rounded-md hover:bg-bg-elevated transition-colors"
-          title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
-        >
-          {theme === 'dark'
-            ? <Sun size={16} className="text-heist-amber" />
-            : <Moon size={16} className="text-muted-foreground" />
-          }
-        </button>
       </div>
     </nav>
   );

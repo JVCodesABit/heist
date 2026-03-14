@@ -44,7 +44,7 @@ interface InvestigationState {
   meeraMessages: Record<string, Array<{ role: 'meera' | 'user'; text: string }>>;
   meeraLoading: Record<string, boolean>;
   geminiApiKey: string | null;
-  theme: 'dark' | 'light';
+  theme: 'light';
 
   setScreen: (screen: string) => void;
   startCase: (caseId?: '047' | '048') => void;
@@ -58,7 +58,6 @@ interface InvestigationState {
   updateLastMeeraMessage: (evidenceType: string, chunk: string) => void;
   setMeeraLoading: (evidenceType: string, loading: boolean) => void;
   setGeminiApiKey: (key: string) => void;
-  toggleTheme: () => void;
   calculateResults: () => void;
 }
 
@@ -92,7 +91,7 @@ export const useInvestigationStore = create<InvestigationState>()(
       meeraMessages: {},
       meeraLoading: {},
       geminiApiKey: null,
-      theme: 'dark',
+      theme: 'light',
 
       setScreen: (screen) => set({ currentScreen: screen }),
       startCase: (caseId = '047') => set({ caseStarted: true, currentScreen: 'case', activeCaseId: caseId }),
@@ -144,7 +143,6 @@ export const useInvestigationStore = create<InvestigationState>()(
         meeraLoading: { ...state.meeraLoading, [evidenceType]: loading },
       })),
       setGeminiApiKey: (key) => set({ geminiApiKey: key }),
-      toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
       calculateResults: () => {
         const state = get();
         const is048 = state.activeCaseId === '048';

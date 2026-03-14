@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type EvidenceType = 'whatsapp' | 'transactions' | 'contract' | 'website' | 'bankstatement';
-export type FraudType = 'ponzi' | 'advance_fee' | 'fake_sebi' | 'task_scam';
+export type EvidenceType = 'whatsapp' | 'transactions' | 'contract' | 'website' | 'bankstatement' | 'linkedin' | 'email' | 'payment' | 'talentbridge' | 'offerletter';
+export type FraudType = 'ponzi' | 'advance_fee' | 'fake_sebi' | 'task_scam' | 'fake_recruitment' | 'identity_theft' | 'impersonation';
 export type AnnotationType = 'red_flag' | 'suspicious' | 'verify';
 export type InvestigatorType = 'The Forensic Mind' | 'The Pattern Tracker' | 'The Learning Investigator' | 'The Vulnerable Observer' | 'The Perfect Victim';
 
@@ -36,6 +36,7 @@ interface Results {
 interface InvestigationState {
   currentScreen: string;
   caseStarted: boolean;
+  activeCaseId: '047' | '048';
   evidenceViewed: EvidenceType[];
   annotations: Annotation[];
   hypothesis: Hypothesis;
@@ -46,7 +47,8 @@ interface InvestigationState {
   theme: 'dark' | 'light';
 
   setScreen: (screen: string) => void;
-  startCase: () => void;
+  startCase: (caseId?: '047' | '048') => void;
+  resetCase: () => void;
   viewEvidence: (type: EvidenceType) => void;
   addAnnotation: (annotation: Omit<Annotation, 'id' | 'timestamp'>) => void;
   removeAnnotation: (id: string) => void;
@@ -60,13 +62,15 @@ interface InvestigationState {
   calculateResults: () => void;
 }
 
-const CORRECT_ANNOTATIONS = ['msg4', 'msg6', 'msg8', 'sep20', 'oct8', 'nov10', 'dec9', 'clause71', 'sebi_badge'];
+const CORRECT_ANNOTATIONS_047 = ['msg4', 'msg6', 'msg8', 'sep20', 'oct8', 'nov10', 'dec9', 'clause71', 'sebi_badge'];
+const CORRECT_ANNOTATIONS_048 = ['li_msg2', 'li_msg5', 'li_msg8', 'li_msg11', 'email_domain', 'pay_bg', 'pay_dep', 'pay_offer', 'tb_badge', 'ol_logo', 'ol_clause'];
 
 export const useInvestigationStore = create<InvestigationState>()(
   persist(
     (set, get) => ({
       currentScreen: 'landing',
       caseStarted: false,
+      activeCaseId: '047',
       evidenceViewed: [],
       annotations: [],
       hypothesis: {
@@ -91,7 +95,16 @@ export const useInvestigationStore = create<InvestigationState>()(
       theme: 'dark',
 
       setScreen: (screen) => set({ currentScreen: screen }),
-      startCase: () => set({ caseStarted: true, currentScreen: 'case' }),
+      startCase: (caseId = '047') => set({ caseStarted: true, currentScreen: 'case', activeCaseId: caseId }),
+      resetCase: () => set({
+        caseStarted: false,
+        evidenceViewed: [],
+        annotations: [],
+        hypothesis: { trapType: null, firstRedFlag: '', biasTrap: [], interventionPoint: null, submitted: false },
+        results: { tacticsTotal: 8, tacticsCaught: 0, tacticsMissed: 0, hypothesisAccuracy: 0, investigatorType: null, blindSpot: null, score: 0 },
+        meeraMessages: {},
+        meeraLoading: {},
+      }),
       viewEvidence: (type) => set((state) => ({
         evidenceViewed: state.evidenceViewed.includes(type)
           ? state.evidenceViewed
@@ -134,21 +147,35 @@ export const useInvestigationStore = create<InvestigationState>()(
       toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
       calculateResults: () => {
         const state = get();
-        const tacticsCaught = state.annotations.filter((a) =>
-          CORRECT_ANNOTATIONS.includes(a.itemId)
-        ).length;
-        const tacticsMissed = 8 - Math.min(tacticsCaught, 8);
+        const is048 = state.activeCaseId === '048';
+        const correctList = is048 ? CORRECT_ANNOTATIONS_048 : CORRECT_ANNOTATIONS_047;
+        const totalTactics = is048 ? 8 : 8;
 
-        const hypothesisChecks = [
-          state.hypothesis.trapType === 'task_scam',
-          state.hypothesis.firstRedFlag.trim() !== '',
-          state.hypothesis.biasTrap.includes('urgency'),
-          state.hypothesis.interventionPoint === 'week1',
-        ];
+        const tacticsCaught = state.annotations.filter((a) =>
+          correctList.includes(a.itemId)
+        ).length;
+        const tacticsMissed = totalTactics - Math.min(tacticsCaught, totalTactics);
+
+        let hypothesisChecks: boolean[];
+        if (is048) {
+          hypothesisChecks = [
+            state.hypothesis.trapType === 'advance_fee',
+            state.hypothesis.firstRedFlag.trim() !== '',
+            state.hypothesis.biasTrap.includes('authority'),
+            state.hypothesis.interventionPoint === 'week1',
+          ];
+        } else {
+          hypothesisChecks = [
+            state.hypothesis.trapType === 'task_scam',
+            state.hypothesis.firstRedFlag.trim() !== '',
+            state.hypothesis.biasTrap.includes('urgency'),
+            state.hypothesis.interventionPoint === 'week1',
+          ];
+        }
         const hypothesisAccuracy = hypothesisChecks.filter(Boolean).length;
 
         const score = Math.round(
-          (Math.min(tacticsCaught, 8) / 8) * 50 + (hypothesisAccuracy / 4) * 50
+          (Math.min(tacticsCaught, totalTactics) / totalTactics) * 50 + (hypothesisAccuracy / 4) * 50
         );
 
         let investigatorType: InvestigatorType;
@@ -160,16 +187,24 @@ export const useInvestigationStore = create<InvestigationState>()(
 
         const annotatedIds = state.annotations.map((a) => a.itemId);
         let blindSpot: string | null = null;
-        if (!annotatedIds.includes('clause71')) blindSpot = 'fine_print_blindness';
-        else if (!annotatedIds.includes('msg4') && !annotatedIds.includes('msg6'))
-          blindSpot = 'authority_trust';
-        else if (!annotatedIds.includes('sep20') && !annotatedIds.includes('oct8'))
-          blindSpot = 'number_avoidance';
+        if (is048) {
+          if (!annotatedIds.includes('email_domain')) blindSpot = 'domain_blindness';
+          else if (!annotatedIds.includes('li_msg5') && !annotatedIds.includes('li_msg8'))
+            blindSpot = 'authority_trust';
+          else if (!annotatedIds.includes('pay_bg') && !annotatedIds.includes('pay_dep'))
+            blindSpot = 'number_avoidance';
+        } else {
+          if (!annotatedIds.includes('clause71')) blindSpot = 'fine_print_blindness';
+          else if (!annotatedIds.includes('msg4') && !annotatedIds.includes('msg6'))
+            blindSpot = 'authority_trust';
+          else if (!annotatedIds.includes('sep20') && !annotatedIds.includes('oct8'))
+            blindSpot = 'number_avoidance';
+        }
 
         set({
           results: {
-            tacticsTotal: 8,
-            tacticsCaught: Math.min(tacticsCaught, 8),
+            tacticsTotal: totalTactics,
+            tacticsCaught: Math.min(tacticsCaught, totalTactics),
             tacticsMissed,
             hypothesisAccuracy,
             investigatorType,

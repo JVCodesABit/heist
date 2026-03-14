@@ -15,8 +15,9 @@ const ARCHETYPE_DESCRIPTIONS: Record<string, string> = {
 
 const BLIND_SPOT_TEXT: Record<string, { title: string; text: string }> = {
   fine_print_blindness: { title: 'Fine Print Blindness',   text: "You didn't catch Clause 7.1 — the 24-month lock-in with a 35% withdrawal penalty. Always read the withdrawal and termination clauses first. Scammers deliberately make contracts long and boring, hiding the trap in dense legal language." },
-  authority_trust:      { title: 'Authority Trust',        text: "You missed the urgency and manipulation in Vikram's messages. When someone claims authority (SEBI registration, client success stories), we tend to trust their communication style as well. Urgency from an 'authority' feels legitimate when it shouldn't." },
-  number_avoidance:     { title: 'Number Avoidance',       text: "You didn't closely examine the transaction patterns. The escalating amounts (₹50k → ₹70k → ₹20k → ₹1L) and the complete absence of returns tell the entire story. Following the money is the single most effective fraud detection technique." },
+  authority_trust:      { title: 'Authority Trust',        text: "You missed the urgency and manipulation in the messages. When someone claims authority (SEBI registration, NASSCOM certification), we tend to trust their communication style as well. Urgency from an 'authority' feels legitimate when it shouldn't." },
+  number_avoidance:     { title: 'Number Avoidance',       text: "You didn't closely examine the transaction patterns. Following the money is the single most effective fraud detection technique." },
+  domain_blindness:     { title: 'Domain Blindness',       text: "You missed the fake email domain — deloitte-careers.in is NOT deloitte.com. Scammers register lookalike domains designed to pass a quick glance. Always verify the sender's domain against the company's official website." },
 };
 
 const ARCHETYPE_COLOR: Record<string, string> = {
@@ -55,7 +56,7 @@ function AnimatedCount({ target, delay = 0 }: { target: number; delay?: number }
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { hypothesis, results, evidenceViewed, annotations } = useInvestigationStore();
+  const { hypothesis, results, evidenceViewed, annotations, activeCaseId } = useInvestigationStore();
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -75,7 +76,11 @@ export default function Profile() {
 
   const archetypeGradient = ARCHETYPE_COLOR[results.investigatorType] ?? 'from-heist-blue/15 to-transparent border-heist-blue/30';
 
-  const shareText = `🔍 HEIST — Case #047: The Friendly Broker\n\nInvestigator Type: ${results.investigatorType}\nScore: ${results.score}/100\nTactics Caught: ${results.tacticsCaught}/8\nEvidence Reviewed: ${evidenceViewed.length}/5\n\nCan you do better? Play at heist.app`;
+  const caseLabel = activeCaseId === '048' ? 'Case #048: The Dream Job' : 'Case #047: The Friendly Broker';
+  const totalTactics = 8;
+  const totalEvidence = activeCaseId === '048' ? 5 : 5;
+
+  const shareText = `🔍 HEIST — ${caseLabel}\n\nInvestigator Type: ${results.investigatorType}\nScore: ${results.score}/100\nTactics Caught: ${results.tacticsCaught}/${totalTactics}\nEvidence Reviewed: ${evidenceViewed.length}/${totalEvidence}\n\nCan you do better? Play at heist.app`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareText);
@@ -87,9 +92,9 @@ export default function Profile() {
   const blindSpot = results.blindSpot ? BLIND_SPOT_TEXT[results.blindSpot] : null;
 
   const STATS = [
-    { value: results.tacticsCaught, total: 8,    label: 'Tactics Caught',    Icon: Target,   color: 'text-heist-green' },
-    { value: results.score,         total: 100,   label: 'Score',             Icon: TrendingUp, color: ringColor.startsWith('#') ? undefined : 'text-heist-blue' },
-    { value: evidenceViewed.length, total: 5,     label: 'Evidence',          Icon: BookOpen, color: 'text-heist-amber' },
+    { value: results.tacticsCaught, total: totalTactics, label: 'Tactics Caught',    Icon: Target,   color: 'text-heist-green' },
+    { value: results.score,         total: 100,           label: 'Score',             Icon: TrendingUp, color: ringColor.startsWith('#') ? undefined : 'text-heist-blue' },
+    { value: evidenceViewed.length, total: totalEvidence,  label: 'Evidence',          Icon: BookOpen, color: 'text-heist-amber' },
     { value: annotations.length,    total: null,  label: 'Annotations',       Icon: AlertOctagon, color: 'text-heist-blue' },
   ];
 
@@ -169,7 +174,7 @@ export default function Profile() {
               transition={{ delay: 0.65 }}
             >
               <span className="font-mono text-[10px] text-heist-green bg-heist-green/10 px-2 py-0.5 rounded-sm">
-                {results.tacticsCaught}/8 tactics caught
+                {results.tacticsCaught}/{totalTactics} tactics caught
               </span>
             </motion.div>
           </div>
@@ -245,18 +250,19 @@ export default function Profile() {
       {/* ── Next Case Teaser ── */}
       <motion.div
         variants={fadeUp}
-        className="paper-card p-5 mb-8 relative overflow-hidden"
+        className="paper-card p-5 mb-8 relative overflow-hidden cursor-pointer"
         whileHover={{ scale: 1.01, transition: { duration: 0.2 } }}
+        onClick={() => navigate('/')}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-bg-elevated/50 pointer-events-none" />
         <div className="flex items-center gap-3 mb-2">
-          <Lock size={14} className="text-text-tertiary" />
-          <span className="font-mono text-[10px] text-text-tertiary tracking-wider">NEXT CASE — LOCKED</span>
+          <BookOpen size={14} className="text-heist-amber" />
+          <span className="font-mono text-[10px] text-heist-amber tracking-wider">MORE CASES AVAILABLE</span>
         </div>
-        <h4 className="font-typewriter text-sm text-foreground">Case #048 — The Dream Job</h4>
-        <p className="font-body text-[13px] text-text-secondary mt-1">A job offer too good to be true. Coming soon.</p>
-        <button disabled className="btn-stamp-outline text-xs mt-3 opacity-40 cursor-not-allowed">
-          COMING SOON
+        <h4 className="font-typewriter text-sm text-foreground">Explore More Investigations</h4>
+        <p className="font-body text-[13px] text-text-secondary mt-1">Ready for another challenge? Browse all available case files.</p>
+        <button className="btn-stamp-outline text-xs mt-3">
+          BROWSE CASES →
         </button>
       </motion.div>
 

@@ -310,14 +310,14 @@ const CASES = [
   {
     id: '048',
     title: 'The Dream Job',
-    status: 'LOCKED',
+    status: 'ACTIVE',
     category: 'Recruitment Scam',
-    amount: '₹1,80,000',
+    amount: '₹85,000',
     difficulty: 'BEGINNER',
     description: 'A LinkedIn recruiter with a perfect profile. A job offer with double your salary. All they need is a "refundable" processing fee to start your onboarding.',
     tags: ['Social Engineering', 'Impersonation', 'Advance Fee'],
-    available: false,
-    path: '#',
+    available: true,
+    path: '/case-048',
   },
   {
     id: '049',

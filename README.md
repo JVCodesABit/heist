@@ -1,5 +1,4 @@
 # GET YOUR OWN GEMINI API KEY AND PASTE IN ENV- 
-AIzaSyD2dauvW4DVQTCK3Tf3rF_xcFOtIVJfHds
 
 # 🕵️ HEIST — Financial Crime Investigation Game
 
